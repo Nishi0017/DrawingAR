@@ -32,21 +32,13 @@ public class ColorDetailChanger : MonoBehaviour
         redSlider.onValueChanged.AddListener(delegate { ChangeSampleColor(); });
         greenSlider.onValueChanged.AddListener(delegate { ChangeSampleColor(); });
         blueSlider.onValueChanged.AddListener(delegate { ChangeSampleColor(); });
+        widthSlider.onValueChanged.AddListener(delegate { ChangeSampleColor(); });
 
         redSlider.onValueChanged.AddListener(delegate { ChangeTextColor(0); });
         greenSlider.onValueChanged.AddListener(delegate { ChangeTextColor(1); });
         blueSlider.onValueChanged.AddListener(delegate { ChangeTextColor(2); });
-    }
 
-    public void ChangeColor()
-    {
-        float r = redSlider.value;
-        float g = greenSlider.value;
-        float b = blueSlider.value;
-        float w = widthSlider.value;
-
-        drawing.ColorDetailChange(r, g, b, w);
-
+       
     }
 
     void ChangeSampleColor()
@@ -54,11 +46,11 @@ public class ColorDetailChanger : MonoBehaviour
         float r = redSlider.value;
         float g = greenSlider.value;
         float b = blueSlider.value;
+        float w = widthSlider.value;
 
         sampleColor.material.color = new Color(r, g, b);
 
-        setButton.color = new Color(r, g, b);
-        setButtonText.color = new Color(1 - r, 1 - g, 1 - b);
+        drawing.ColorChange(r, g, b, w);
 
     }
 

@@ -7,6 +7,7 @@ public class Drawing : MonoBehaviour
 {
     [SerializeField] GameObject lineObjPrefab;
     private GameObject currentLineObj;
+    private bool isDrawing;
 
     [SerializeField] OVRHand rightOVRHand;
     [SerializeField] OVRHand leftOVRHand;
@@ -18,7 +19,12 @@ public class Drawing : MonoBehaviour
     private Color lineColor;
     [SerializeField] Renderer rightHandRenderer;
 
-    private float lineWidth = 0.01f;
+    private float lineWidth = 5f;
+    public float LineWidth
+    {
+        set { lineWidth = value; }
+        get { return lineWidth; }
+    }
 
     private LineRenderer lineRenderer;
 
@@ -57,7 +63,6 @@ public class Drawing : MonoBehaviour
         // 2つの指の位置の差を計算
         float distanceR = Vector3.SqrMagnitude(indexTipPosR - thumbTipPosR);
 
-        Debug.Log(distanceR);
         // 指先がくっついているかどうかを判定
         if (distanceR < touchDistanceThreshold)
         {
@@ -69,10 +74,12 @@ public class Drawing : MonoBehaviour
                     lineParent.name = "LineParent";
                 }
 
+                isDrawing = true;
                 currentLineObj = Instantiate(lineObjPrefab, Vector3.zero, Quaternion.identity);
                 lineRenderer = currentLineObj.GetComponent<LineRenderer>();
                 lineRenderer.material.color = lineColor;
-
+                lineRenderer.startWidth = LineWidth;
+                lineRenderer.endWidth = LineWidth;
 
                 currentLineObj.transform.parent = lineParent.transform;
             }
@@ -85,6 +92,7 @@ public class Drawing : MonoBehaviour
         {
             if(currentLineObj != null)
             {
+                isDrawing = false;
                 currentLineObj = null;
             }
         }
@@ -117,18 +125,20 @@ public class Drawing : MonoBehaviour
         }
     }
 
-    public void ColorChange(Color _color)
-    {
-        lineColor = _color;
-        rightHandRenderer.GetComponent<Renderer>().material.color = lineColor;
-    }
-
-    public void ColorDetailChange(float r, float g, float b, float w)
+    public void ColorChange(float r, float g, float b, float w)
     {
         lineColor = new Color(r, g, b);
         rightHandRenderer.GetComponent<Renderer>().material.color = lineColor;
 
-        lineWidth = w / 500.0f;
+        LineWidth = w / 500.0f;
+     
+        if (isDrawing)
+        {
+            isDrawing = false;
+            currentLineObj = null;
+        }
+
+
     }
 
     public void DeleteLines()
@@ -154,4 +164,5 @@ public class Drawing : MonoBehaviour
         isAnimation = false;
         canDraw = true;
     }
+    
 }
