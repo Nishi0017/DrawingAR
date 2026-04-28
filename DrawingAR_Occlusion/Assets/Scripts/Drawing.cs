@@ -39,6 +39,9 @@ public class Drawing : MonoBehaviour
     [SerializeField] Transform returnPos;
 
     private bool canDraw = true;
+
+    public AreaChecker paintAreaChecker;
+
     public bool CanDraw
     {
         set { canDraw = value; }
@@ -68,6 +71,7 @@ public class Drawing : MonoBehaviour
         {
             if (currentLineObj == null)
             {
+
                 if (lineParent == null)
                 {
                     lineParent = new GameObject();
@@ -84,9 +88,13 @@ public class Drawing : MonoBehaviour
                 currentLineObj.transform.parent = lineParent.transform;
             }
 
-            int nextPosIndex = lineRenderer.positionCount;
-            lineRenderer.positionCount = nextPosIndex + 1;
-            lineRenderer.SetPosition(nextPosIndex, indexTipPosR);
+            // ペイントエリア内か判定
+            if (paintAreaChecker.InArea())
+            {
+                int nextPosIndex = lineRenderer.positionCount;
+                lineRenderer.positionCount = nextPosIndex + 1;
+                lineRenderer.SetPosition(nextPosIndex, indexTipPosR);
+            }
         }
         else
         {
