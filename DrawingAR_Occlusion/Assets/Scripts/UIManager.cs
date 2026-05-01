@@ -22,8 +22,10 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
+        // DOTweenの初期化
         DOTween.Init();
 
+        // 初期状態ではキャンバスと各UIを非表示にする
         flatUnityCanvas.SetActive(false);
         for(int i = 0; i < UIs.Length; i++)
         {
@@ -33,16 +35,19 @@ public class UIManager : MonoBehaviour
 
     public void SetUIVisibility(int num)
     {
+        // アニメーション再生中は入力を受け付けない
         if (isAnimation) return;
 
         if (uiActive)
         {
+            // 同じUIボタンが押された場合は閉じる
             if(nowActiveNum == num)
             {
                 uiActive = false;
             }
             else
             {
+                // 違うUIボタンが押された場合は、現在開いているものを閉じて新しいものを開く
                 uiActive = true;
                 SwitchUI(nowActiveNum);
             }
@@ -50,17 +55,23 @@ public class UIManager : MonoBehaviour
         }
         else
         {
+            // UIを開く処理
             nowActiveNum = num;
 
             flatUnityCanvas.SetActive(true);
 
+            // キャンバスの位置をカメラの前方に設定
             flatUnityCanvas.transform.position = centerCameraForward.position;
 
+            // キャンバスをカメラの方向へ向かせる
             flatUnityCanvas.transform.LookAt(centerCamera.position);
 
+            // LookAtで裏返ってしまう場合があるため、Y軸を180度回転させて正面を向ける
             flatUnityCanvas.transform.rotation *= Quaternion.Euler(0f, 180f, 0f);
             uiActive = true;
         }
+        
+        // アニメーションの実行
         AnimationUI(uiActive);
     }
 
@@ -70,62 +81,69 @@ public class UIManager : MonoBehaviour
         isAnimation = true;
         if (toActive)
         {
+            // UIを開くとき：左手の位置からスケール0で出現し、指定座標へ拡大しながら移動する
             uiRectTransforms[nowActiveNum].localScale = Vector3.zero;
             uiRectTransforms[nowActiveNum].position = leftPalm.transform.position;
             Transform parent = uiRectTransforms[nowActiveNum].parent;
             uiRectTransforms[nowActiveNum].SetParent(parent);
             UIs[nowActiveNum].SetActive(true);
 
-            // ���[�J���X�P�[���̃A�j���[�V����
+            // スケールのアニメーション（0から1へ）
             uiRectTransforms[nowActiveNum].DOScale(Vector3.one, 1.0f)
-                .SetEase(Ease.OutSine) // �C�[�W���O�֐���ݒ�
+                .SetEase(Ease.OutSine) // イージング関数の設定（滑らかに減速）
                 .OnComplete(FinAnimation);
 
-            // ���[�J�����W�̃A�j���[�V����
+            // ローカル座標の移動アニメーション
             Vector3 targetPosition = new Vector3(1f, 1f, 1f);
             uiRectTransforms[nowActiveNum].DOLocalMove(targetPosition, 1.0f)
-                .SetEase(Ease.OutSine); // �C�[�W���O�֐���ݒ�
+                .SetEase(Ease.OutSine); // イージング関数の設定（滑らかに減速）
         }
         else
         {
-            // ���[�J���X�P�[���̃A�j���[�V����
+            // UIを閉じるとき：スケールを0にしながら、左手の位置へ戻る
+            
+            // スケールのアニメーション（1から0へ）
             uiRectTransforms[nowActiveNum].DOScale(Vector3.zero, 0.5f)
-                .SetEase(Ease.InSine) // �C�[�W���O�֐���ݒ�
+                .SetEase(Ease.InSine) // イージング関数の設定（滑らかに加速）
                 .OnComplete(FinAnimation);
 
-            // ���[�J�����W�̃A�j���[�V����
+            // ワールド座標の移動アニメーション（左手の位置へ）
             uiRectTransforms[nowActiveNum].DOMove(leftPalm.transform.position, 0.5f)
-                .SetEase(Ease.InSine); // �C�[�W���O�֐���ݒ�
+                .SetEase(Ease.InSine); // イージング関数の設定（滑らかに加速）
 
+            // 0.5秒後（アニメーション完了後）にUIを非アクティブにする
             Invoke("DeleteUI", 0.5f);
         }
     }
 
+    // アニメーション終了時のフラグ解除
     private void FinAnimation()
     {
         isAnimation = false;
     }
 
+    // UIとキャンバスを非アクティブにする
     private void DeleteUI()
     {
         UIs[nowActiveNum].SetActive(false);
         flatUnityCanvas.SetActive(false);
     }
 
+    // 別のUIに切り替える際、古いUIを閉じるアニメーション
     private void SwitchUI(int num)
     {
-        // ���[�J���X�P�[���̃A�j���[�V����
+        // スケールのアニメーション（1から0へ縮小）
         uiRectTransforms[num].DOScale(Vector3.zero, 0.5f)
-            .SetEase(Ease.InSine) // �C�[�W���O�֐���ݒ�
-            .OnComplete(() => SetUIInaactive(num));
+            .SetEase(Ease.InSine) // イージング関数の設定
+            .OnComplete(() => SetUIInactive(num));
 
-        // ���[�J�����W�̃A�j���[�V����
+        // ワールド座標の移動アニメーション（左手の位置へ戻る）
         uiRectTransforms[num].DOMove(leftPalm.transform.position, 0.5f)
-            .SetEase(Ease.InSine); // �C�[�W���O�֐���ݒ�
-
+            .SetEase(Ease.InSine); // イージング関数の設定
     }
 
-    private void SetUIInaactive(int num)
+    // 指定したUIを非アクティブにする
+    private void SetUIInactive(int num)
     {
         UIs[num].SetActive(false);
     }

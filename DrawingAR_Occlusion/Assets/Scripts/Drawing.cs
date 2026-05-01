@@ -33,10 +33,14 @@ public class Drawing : MonoBehaviour
 
     [Header("パレット設定")]
     [SerializeField] private GameObject paletteObjPrefab;
+    [SerializeField] private GameObject eraserObjPrefab;
     [SerializeField] private Transform centerCamera;
     [SerializeField] private float during = 5.0f;
     private GameObject paletteObj;
     private bool havePalette = false;
+
+    private GameObject eraserObj;
+    private bool haveEraser = false;
 
     [Header("全消去アニメーション設定")]
     [SerializeField] private Transform returnPos;
@@ -184,6 +188,32 @@ private void Update()
             Destroy(paletteObj);
             paletteObj = null;
             havePalette = false;
+        }
+    }
+
+    // --- 消しゴム出現・消去
+    public void EraserController()
+    {
+        if (!haveEraser)
+        {
+            Vector3 createPos = leftSkeleton.gameObject.transform.position + centerCamera.forward * during;
+            eraserObj = Instantiate(eraserObjPrefab, createPos, Quaternion.identity);
+            eraserObj.transform.LookAt(centerCamera);
+            haveEraser = true;
+        }
+        else
+        {
+            DestroyEraser();
+        }
+    }
+
+    public void DestroyEraser()
+    {
+        if (eraserObj != null)
+        {
+            Destroy(eraserObj);
+            eraserObj = null;
+            haveEraser = false;
         }
     }
 
