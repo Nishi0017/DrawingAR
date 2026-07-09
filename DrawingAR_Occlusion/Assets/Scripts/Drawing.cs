@@ -31,9 +31,10 @@ public class Drawing : MonoBehaviour
     private Color lineColor;
     public float LineWidth { get; set; } = 0.01f;
 
-    [Header("パレット設定")]
     [SerializeField] private GameObject paletteObjPrefab;
     [SerializeField] private GameObject eraserObjPrefab;
+
+    [SerializeField] private Vector3 eraserRotationOffset = new Vector3(0f, 0f, 0f);
     [SerializeField] private Transform centerCamera;
     [SerializeField] private float during = 5.0f;
     private GameObject paletteObj;

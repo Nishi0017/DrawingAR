@@ -20,7 +20,7 @@ public class Eraser : MonoBehaviour
     void OnTriggerStay(Collider other)
     {
         // 触れたものが描画した線（DrawnLine）だったら
-        if (other.CompareTag("DrawnLine"))
+        if (other.CompareTag("DrawnLineDrawnLine"))
         {
             LineRenderer targetLine = other.GetComponent<LineRenderer>();
             if (targetLine != null)
@@ -95,8 +95,11 @@ public class Eraser : MonoBehaviour
         {
             GameObject newLineObj = Instantiate(linePrefab, Vector3.zero, Quaternion.identity);
             newLineObj.tag = "DrawnLine";
+
             LineRenderer newLine = newLineObj.GetComponent<LineRenderer>();
             
+            newLine.material.color = line.material.color; // 元の線と同じ色にする
+
             newLine.positionCount = part2.Count;
             newLine.SetPositions(part2.ToArray());
             UpdateCollider(newLine); // ★新しい線の安全なBoxColliderを作る
