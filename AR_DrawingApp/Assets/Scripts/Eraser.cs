@@ -20,7 +20,7 @@ public class Eraser : MonoBehaviour
     void OnTriggerStay(Collider other)
     {
         // 触れたものが描画した線（DrawnLine）だったら
-        if (other.CompareTag("DrawnLineDrawnLine"))
+        if (other.CompareTag("DrawnLine"))
         {
             LineRenderer targetLine = other.GetComponent<LineRenderer>();
             if (targetLine != null)

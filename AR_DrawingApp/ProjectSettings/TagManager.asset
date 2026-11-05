@@ -8,6 +8,11 @@ TagManager:
   - Color
   - CanPaint
   - DrawnLine
+  - QDSUIIcon
+  - QDSUIToggleButton
+  - QDSUIBackplateGradient
+  - MultiLeftHand
+  - MultiRightHand
   layers:
   - Default
   - TransparentFX
